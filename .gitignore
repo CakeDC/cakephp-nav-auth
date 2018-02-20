@@ -1,5 +1,7 @@
 # CakePHP 3
 
+/composer.lock
+/phpunit.xml
 /vendor/*
 /config/app.php
 
