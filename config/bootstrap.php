@@ -9,14 +9,10 @@
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-use Cake\Routing\RouteBuilder;
-use Cake\Routing\Router;
-use Cake\Routing\Route\DashedRoute;
+use Cake\Core\Configure;
 
-Router::plugin(
-    'CakeDC/NavAuth',
-    ['path' => '/nav-auth'],
-    function (RouteBuilder $routes) {
-        $routes->fallbacks(DashedRoute::class);
-    }
-);
+Configure::load('CakeDC/NavAuth.navauth');
+collection((array)Configure::read('NavAuth.config'))->each(function ($file) {
+    Configure::load($file);
+});
+
