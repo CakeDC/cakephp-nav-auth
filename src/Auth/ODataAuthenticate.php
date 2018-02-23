@@ -25,10 +25,10 @@ use CakeDC\NavAuth\Network\NavClient;
  *
  * @see \Cake\Controller\Component\AuthComponent::$authenticate
  */
-class SoapAuthenticate extends NavAuthenticate
+class ODataAuthenticate extends NavAuthenticate
 {
     /**
      * @var string Type
      */
-    protected $_type = NavClient::TYPE_SOAP;
+    protected $_type = NavClient::TYPE_ODATA;
 }

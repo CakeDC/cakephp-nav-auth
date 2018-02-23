@@ -11,16 +11,43 @@
 
 $config = [
     'NavAuth' => [
-        // Protocol (http, https)
-        'protocol' => 'https',
-        // Server
-        'server' => '',
-        // Port
-        'port' => '',
-        // Instance
-        'instance' => '\Cake\Auth\DefaultPasswordHasher',
-        // Company String
-        'company' => '',
+        'url' => [
+            'soap' => [
+                // Protocol (http, https)
+                'protocol' => 'https',
+                // Server
+                'server' => '',
+                // Port
+                'port' => '',
+                // Instance
+                'instance' => '',
+                // Company String
+                'company' => '',
+                //Type
+                'type' => '',
+                //Endpoint
+                'endpoint' => '',
+            ],
+            'odata' => [
+                //Protocol (http, https)
+                'protocol' => 'https',
+                //Server
+                'server' => '',
+                //Port
+                'port' => '',
+                //Instance
+                'instance' => '',
+                //Method
+                'method' => '',
+                //Type (usually empty for odata)
+                'type' => '',
+                //Company String
+                'company' => '',
+                //Endpoint
+                'endpoint' => '',
+            ]
+
+        ],
         'auth' => [
             // NTML authentication params
             'ntlm' => [

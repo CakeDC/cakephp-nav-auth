@@ -29,7 +29,6 @@ use SoapClient;
  */
 class NTLMSoapClient extends SoapClient
 {
-
     /**
      * Do request against server
      * @param array $request Request
@@ -66,6 +65,7 @@ class NTLMSoapClient extends SoapClient
      */
     protected function _executeCurl($location, $request, $headers = [])
     {
+        // phpcs:ignore
         //TODO Refactor this using Http Client after implementing NTLM authenticate in CakePHP core
         $ch = curl_init($location);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

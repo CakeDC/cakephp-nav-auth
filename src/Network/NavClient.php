@@ -11,8 +11,10 @@
 namespace CakeDC\NavAuth\Network;
 
 use Cake\Core\Configure;
+use Cake\Http\Client;
 use Cake\Log\Log;
 use Cake\Network\Exception\InternalErrorException;
+use Cake\Utility\Hash;
 
 /**
  * Class NavClient
@@ -20,20 +22,44 @@ use Cake\Network\Exception\InternalErrorException;
  */
 class NavClient
 {
+    /**
+     * Type SOAP
+     */
+    const TYPE_SOAP = 'soap';
+    /**
+     * Type OData
+     */
+    const TYPE_ODATA = 'odata';
 
     /**
      * Get user from webservice
      * @param string $username Username
      * @param string $password Password
+     * @param string $type (soap, odata)
      * @return bool|mixed
      */
-    public function getUser($username, $password)
+    public function getUser($username, $password, $type = self::TYPE_SOAP)
     {
         try {
-            $result = $this->_connect($username, $password);
-            if (empty($result['Status'])) {
-                return false;
-            }
+            $credentials = [
+                'id' => $username,
+                'pw' => $password,
+            ];
+            $baseURL = sprintf(
+                '%s://%s:%s/%s/%s/%s/%s/%s',
+                Configure::read("NavAuth.url.$type.protocol"),
+                Configure::read("NavAuth.url.$type.server"),
+                Configure::read("NavAuth.url.$type.port"),
+                Configure::read("NavAuth.url.$type.instance"),
+                Configure::read("NavAuth.url.$type.method"),
+                Configure::read("NavAuth.url.$type.company"),
+                Configure::read("NavAuth.url.$type.type"),
+                Configure::read("NavAuth.url.$type.endpoint")
+            );
+            Log::info(__('Connecting to webservice: {0}', $baseURL));
+            $type = '_' . $type;
+            $result = $this->{$type}($baseURL, $credentials);
+            Log::debug(__('Connection successful - Response: {0}', $result));
 
             return $result;
         } catch (\Exception $e) {
@@ -44,30 +70,42 @@ class NavClient
     }
 
     /**
-     * Connect to webservice using credentials
+     * Connect to OData server for credentials
      *
-     * @param string $username Username
-     * @param string $password Password
+     * @param string $baseURL Base url
+     * @param array $credentials Credentials to login
+     *
+     * @return array
+     */
+    protected function _odata($baseURL, $credentials)
+    {
+        $client = $this->_getNTLMODataClient();
+        $baseURL .= '?$filter=' . urlencode(sprintf(
+            "Go2000_id eq '%s' and Go2000_pw eq '%s'",
+            Hash::get($credentials, 'id'),
+            Hash::get($credentials, 'pw')
+        ));
+
+        $response = $client->doRequest($baseURL);
+
+        $result = json_decode($response, true);
+
+        if (empty($result['value'][0])) {
+            return false;
+        }
+
+        return Hash::get($result, 'value.0');
+    }
+
+    /**
+     * Soap connection
+     * @param string $baseURL Base Url
+     * @param array $credentials Credentials to login
+     *
      * @return mixed
      */
-    protected function _connect($username, $password)
+    protected function _soap($baseURL, $credentials)
     {
-        $credentials = [
-            'id' => $username,
-            'pw' => $password,
-        ];
-        $baseURL = sprintf(
-            '%s://%s:%s/%s/%s/%s/%s/%s',
-            Configure::read('NavAuth.url.protocol'),
-            Configure::read('NavAuth.url.server'),
-            Configure::read('NavAuth.url.port'),
-            Configure::read('NavAuth.url.instance'),
-            Configure::read('NavAuth.url.method'),
-            Configure::read('NavAuth.url.company'),
-            Configure::read('NavAuth.url.type'),
-            Configure::read('NavAuth.url.endpoint')
-        );
-        Log::info(__('Connecting to webservice: {0}', $baseURL));
         stream_wrapper_unregister('https');
         if (!stream_wrapper_register('https', NTLMStream::class)) {
             throw new InternalErrorException(__('Failed to register protocol for NTLMStream'));
@@ -80,10 +118,14 @@ class NavClient
             'user' => Configure::read('NavAuth.auth.ntlm.domain') . "\\" . Configure::read('NavAuth.auth.ntlm.username'),
             'password' => Configure::read('NavAuth.auth.ntlm.password')
         ]);
-        $result = $client->Login($credentials);
-        Log::debug(__('Connection successful - Response: {0}', $result->return_value));
 
-        return json_decode($result->return_value, true);
+        $response = $client->Login($credentials);
+        $result = json_decode($response->return_value, true);
+        if (empty($result['Status'])) {
+            return false;
+        }
+
+        return $result;
     }
 
     /**
@@ -94,5 +136,13 @@ class NavClient
     protected function _getNTLMSoapClient($url, $options)
     {
         return new NTLMSoapClient($url, $options);
+    }
+
+    /**
+     * @return NTLMODataClient
+     */
+    protected function _getNTLMODataClient()
+    {
+        return new NTLMODataClient();
     }
 }

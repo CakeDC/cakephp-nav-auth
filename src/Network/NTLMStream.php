@@ -198,6 +198,7 @@ class NTLMStream
         if ($this->buffer) {
             return;
         }
+        // phpcs:ignore
         //TODO Refactor this using Http Client after implementing NTLM authenticate in CakePHP core
         $this->ch = curl_init($path);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);

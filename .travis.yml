@@ -9,7 +9,7 @@ sudo: false
 
 env:
   matrix:
-
+    - DB=sqlite db_dsn='sqlite:///:memory:'
   global:
     - DEFAULT=1
 
