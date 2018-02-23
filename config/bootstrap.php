@@ -15,4 +15,3 @@ Configure::load('CakeDC/NavAuth.navauth');
 collection((array)Configure::read('NavAuth.config'))->each(function ($file) {
     Configure::load($file);
 });
-

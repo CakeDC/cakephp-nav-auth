@@ -23,27 +23,55 @@ use Cake\Core\Configure;
 
 /**
  * Class NTLMStream
- * @package Acm3Navision\src\Libs
  */
 class NTLMStream
 {
+    /**
+     * Path
+     */
     protected $path;
+
+    /**
+     * Mode
+     */
     protected $mode;
+
+    /**
+     * Options
+     */
     protected $options;
+
+    /**
+     * Opened path
+     */
     protected $opened_path;
+
+    /**
+     * Buffer
+     */
     protected $buffer;
+
+    /**
+     * Pos
+     */
     protected $pos;
+
+    /**
+     * Ch
+     */
     protected $ch;
 
     /**
      * Open stream
      *
-     * @param $path
-     * @param $mode
-     * @param $options
-     * @param $opened_path
+     * @param string $path Path
+     * @param string $mode Mode
+     * @param array $options Options
+     * @param string $opened_path Opened path
+     *
      * @return bool
      */
+    // phpcs:ignore
     public function stream_open($path, $mode, $options, $opened_path)
     {
         $this->path = $path;
@@ -51,12 +79,15 @@ class NTLMStream
         $this->options = $options;
         $this->opened_path = $opened_path;
         $this->createBuffer($path);
+
         return true;
     }
     /**
      * Close the stream
      *
+     * @return void
      */
+    // phpcs:ignore
     public function stream_close()
     {
         curl_close($this->ch);
@@ -65,37 +96,40 @@ class NTLMStream
      * Read the stream
      *
      * @param int $count number of bytes to read
-     * @return content from pos to count
+     * @return string|bool content from pos to count
      */
+    // phpcs:ignore
     public function stream_read($count)
     {
-        if(strlen($this->buffer) == 0)
-        {
+        if (strlen($this->buffer) == 0) {
             return false;
         }
-        $read = substr($this->buffer,$this->pos, $count);
+        $read = substr($this->buffer, $this->pos, $count);
         $this->pos += $count;
+
         return $read;
     }
 
     /**
      * Write the stream
      *
-     * @param $data
+     * @param string $data Data to be written
      * @return bool
      */
+    // phpcs:ignore
     public function stream_write($data)
     {
-        if(strlen($this->buffer) == 0)
-        {
+        if (strlen($this->buffer) == 0) {
             return false;
         }
+
         return true;
     }
     /**
      *
      * @return true if eof else false
      */
+    // phpcs:ignore
     public function stream_eof()
     {
         return ($this->pos > strlen($this->buffer));
@@ -103,13 +137,17 @@ class NTLMStream
     /**
      * @return int the position of the current read pointer
      */
+    // phpcs:ignore
     public function stream_tell()
     {
         return $this->pos;
     }
     /**
      * Flush stream data
+     *
+     * @return void
      */
+    // phpcs:ignore
     public function stream_flush()
     {
         $this->buffer = null;
@@ -120,35 +158,44 @@ class NTLMStream
      *
      * @return array stat information
      */
+    // phpcs:ignore
     public function stream_stat()
     {
         $this->createBuffer($this->path);
-        $stat = array(
+        $stat = [
             'size' => strlen($this->buffer),
-        );
+        ];
+
         return $stat;
     }
     /**
      * Stat the url, return only the size of the buffer
      *
+     * @param string $path Path to create buffer
+     * @param mixed $flags Flags
+     *
      * @return array stat information
      */
+    // phpcs:ignore
     public function url_stat($path, $flags)
     {
         $this->createBuffer($path);
-        $stat = array(
+        $stat = [
             'size' => strlen($this->buffer),
-        );
+        ];
+
         return $stat;
     }
     /**
      * Create the buffer by requesting the url through cURL
      *
-     * @param $path
+     * @param string $path Path to create buffer
+     *
+     * @return void
      */
-    private function createBuffer($path)
+    protected function createBuffer($path)
     {
-        if($this->buffer) {
+        if ($this->buffer) {
             return;
         }
         //TODO Refactor this using Http Client after implementing NTLM authenticate in CakePHP core
@@ -158,8 +205,11 @@ class NTLMStream
         curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($this->ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
         curl_setopt($this->ch, CURLOPT_FAILONERROR, 1);
-        curl_setopt($this->ch, CURLOPT_USERPWD,
-            sprintf('%s\\%s:%s',
+        curl_setopt(
+            $this->ch,
+            CURLOPT_USERPWD,
+            sprintf(
+                '%s\\%s:%s',
                 Configure::read('NavAuth.auth.ntlm.domain'),
                 Configure::read('NavAuth.auth.ntlm.username'),
                 Configure::read('NavAuth.auth.ntlm.password')

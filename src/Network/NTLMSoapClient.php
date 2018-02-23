@@ -32,33 +32,53 @@ class NTLMSoapClient extends SoapClient
 
     /**
      * Do request against server
-     * @param $request
-     * @param $location
-     * @param $action
-     * @param $version
-     * @param int $one_way
+     * @param array $request Request
+     * @param string $location Location url
+     * @param string $action Action
+     * @param string $version Version
+     * @param int $one_way One way
+     *
      * @return mixed
      */
+    //phpcs:ignore
     public function __doRequest($request, $location, $action, $version, $one_way = 0)
     {
-        $headers = array(
+        $headers = [
             'Method: POST',
             'Connection: Keep-Alive',
             'User-Agent: PHP-SOAP-CURL',
             'Content-Type: text/xml; charset=utf-8',
             'SOAPAction: "' . $action . '"',
-        );
+        ];
         $this->__last_request_headers = $headers;
+        $response = $this->_executeCurl($location, $request, $headers);
+
+        return $response;
+    }
+
+    /**
+     * Execure curl request
+     * @param string $location Location url
+     * @param array $request Request
+     * @param array $headers Headers
+     *
+     * @return mixed
+     */
+    protected function _executeCurl($location, $request, $headers = [])
+    {
         //TODO Refactor this using Http Client after implementing NTLM authenticate in CakePHP core
         $ch = curl_init($location);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POST, true );
+        curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_NTLM);
-        curl_setopt($ch, CURLOPT_USERPWD,
-            sprintf('%s\\%s:%s',
+        curl_setopt(
+            $ch,
+            CURLOPT_USERPWD,
+            sprintf(
+                '%s\\%s:%s',
                 Configure::read('NavAuth.auth.ntlm.domain'),
                 Configure::read('NavAuth.auth.ntlm.username'),
                 Configure::read('NavAuth.auth.ntlm.password')
@@ -72,11 +92,9 @@ class NTLMSoapClient extends SoapClient
     /**
      * @return string
      */
+    //phpcs:ignore
     public function __getLastRequestHeaders()
     {
-        return implode("\n", $this->__last_request_headers)."\n";
+        return implode("\n", $this->__last_request_headers) . "\n";
     }
-
-
 }
-

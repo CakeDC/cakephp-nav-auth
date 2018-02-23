@@ -11,8 +11,8 @@
 
 namespace CakeDC\NavAuth\Auth;
 
-use Cake\Auth\FormAuthenticate;
 use CakeDC\NavAuth\Network\NavClient;
+use Cake\Auth\FormAuthenticate;
 
 /**
  * An authentication adapter for AuthComponent. Provides the ability to authenticate using POST
@@ -39,6 +39,15 @@ class SoapAuthenticate extends FormAuthenticate
      */
     protected function _findUser($username, $password = null)
     {
-        return (new NavClient())->getUser($username, $password);
+        return $this->_getNavClient()->getUser($username, $password);
+    }
+
+    /**
+     * Return a new instance of NavClient
+     * @return NavClient
+     */
+    protected function _getNavClient()
+    {
+        return new NavClient();
     }
 }
