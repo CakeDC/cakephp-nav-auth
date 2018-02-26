@@ -7,6 +7,8 @@ CakeDC Navision Authenticate plugin for CakePHP
 [![Latest Version](https://poser.pugx.org/CakeDC/cakephp-nav-auth/v/stable.png)](https://packagist.org/packages/CakeDC/cakephp-nav-auth)
 [![License](https://poser.pugx.org/CakeDC/cakephp-nav-auth/license.svg)](https://packagist.org/packages/CakeDC/cakephp-nav-auth)
 
+This CakePHP plugin allows to authenticate against a Navision® server using SOAP or OData webservices.
+ 
 ## Installation
 
 You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
@@ -116,3 +118,5 @@ License
 Copyright 2018 Cake Development Corporation (CakeDC). All rights reserved.
 
 Licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) License. Redistributions of the source code included in this repository must retain the copyright notice found in each file.
+
+Navision® is a trademark of the Microsoft group of companies.
