@@ -11,7 +11,7 @@
 namespace CakeDC\NavAuth\Network;
 
 use Cake\Core\Configure;
-use Cake\Http\Client;
+use Cake\Error\Debugger;
 use Cake\Log\Log;
 use Cake\Network\Exception\InternalErrorException;
 use Cake\Utility\Hash;
@@ -56,6 +56,7 @@ class NavClient
                 Configure::read("NavAuth.url.$type.type"),
                 Configure::read("NavAuth.url.$type.endpoint")
             );
+
             Log::info(__('Connecting to webservice: {0}', $baseURL));
             $type = '_' . $type;
             $result = $this->{$type}($baseURL, $credentials);
@@ -112,11 +113,9 @@ class NavClient
         }
 
         $client = $this->_getNTLMSoapClient($baseURL, [
-            'trace' => true,
+            'trace' => Configure::read('debug'),
             'cache_wsdl' => false,
-            'exceptions' => true,
-            'user' => Configure::read('NavAuth.auth.ntlm.domain') . "\\" . Configure::read('NavAuth.auth.ntlm.username'),
-            'password' => Configure::read('NavAuth.auth.ntlm.password')
+            'exceptions' => true
         ]);
 
         $response = $client->Login($credentials);

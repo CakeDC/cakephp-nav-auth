@@ -60,13 +60,17 @@ class NavClientTest extends TestCase
             ->setMethods(['_getNTLMSoapClient', '_getNTLMODataClient'])
             ->getMock();
         $this->loginResult = new \stdClass();
-        Configure::write("NavAuth.url.odata.protocol", 'https');
-        Configure::write("NavAuth.url.odata.server", 'server');
-        Configure::write("NavAuth.url.odata.port", 'port');
-        Configure::write("NavAuth.url.odata.instance", 'instance');
-        Configure::write("NavAuth.url.odata.method", 'method');
-        Configure::write("NavAuth.url.odata.company", 'company');
-        Configure::write("NavAuth.url.odata.endpoint", 'endpoint');
+        $urlConfig = [
+            'protocol' => 'https',
+            'server' => 'server',
+            'port' => 'port',
+            'instance' => 'instance',
+            'method' => 'method',
+            'company' => 'company',
+            'endpoint' => 'endpoint'
+        ];
+        Configure::write("NavAuth.url.soap", $urlConfig);
+        Configure::write("NavAuth.url.odata", $urlConfig);
     }
 
     /**
@@ -85,6 +89,11 @@ class NavClientTest extends TestCase
             ->will($this->returnValue($this->loginResult));
         $this->NavClient->expects($this->once())
             ->method('_getNTLMSoapClient')
+            ->with('https://server:port/instance/method/company//endpoint', [
+                'trace' => true,
+                'cache_wsdl' => false,
+                'exceptions' => true,
+            ])
             ->will($this->returnValue($this->NTLMSoapClient));
         $result = $this->NavClient->getUser($credentials['id'], $credentials['pw']);
         $this->assertEquals(['Status' => '1', 'user' => 'test'], $result);
@@ -106,6 +115,11 @@ class NavClientTest extends TestCase
             ->will($this->returnValue($this->loginResult));
         $this->NavClient->expects($this->once())
             ->method('_getNTLMSoapClient')
+            ->with('https://server:port/instance/method/company//endpoint', [
+                'trace' => true,
+                'cache_wsdl' => false,
+                'exceptions' => true,
+            ])
             ->will($this->returnValue($this->NTLMSoapClient));
         $result = $this->NavClient->getUser($credentials['id'], $credentials['pw']);
         $this->assertFalse($result);

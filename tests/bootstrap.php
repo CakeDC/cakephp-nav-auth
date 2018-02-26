@@ -8,6 +8,8 @@
  * @copyright Copyright 2010 - 2018, Cake Development Corporation (https://www.cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
+
 /**
  * Test suite bootstrap.
  *
@@ -48,6 +50,18 @@ require ROOT . '/vendor/cakephp/cakephp/src/basics.php';
 require ROOT . '/vendor/autoload.php';
 Cake\Core\Configure::write('debug', true);
 Cake\Core\Configure::write('App.encoding', 'UTF-8');
+\Cake\Cache\Cache::setConfig([
+    '_cake_core_' => [
+        'engine' => 'File',
+        'prefix' => 'cake_core_',
+        'serialize' => true
+    ],
+    '_cake_model_' => [
+        'engine' => 'File',
+        'prefix' => 'cake_model_',
+        'serialize' => true
+    ]
+]);
 ini_set('intl.default_locale', 'en_US');
 
 \Cake\Core\Plugin::load('CakeDC/NavAuth', [
