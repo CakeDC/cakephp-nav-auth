@@ -82,8 +82,10 @@ class NavClient
     {
         $client = $this->_getNTLMODataClient();
         $baseURL .= '?$filter=' . urlencode(sprintf(
-            "Go2000_id eq '%s' and Go2000_pw eq '%s'",
+            "%s eq '%s' and %s eq '%s'",
+            Configure::read('NavAuth.url.odata.loginField'),
             Hash::get($credentials, 'id'),
+            Configure::read('NavAuth.url.odata.passwordField'),
             Hash::get($credentials, 'pw')
         ));
 

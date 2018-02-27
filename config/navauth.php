@@ -45,6 +45,10 @@ $config = [
                 'company' => '',
                 //Endpoint
                 'endpoint' => '',
+                //Login field to filter
+                'loginField' => '',
+                //Password field to filter
+                'passwordField' => ''
             ]
 
         ],
