@@ -21,7 +21,6 @@ use Cake\TestSuite\TestCase;
  */
 class NavClientTest extends TestCase
 {
-
     /**
      * @var NTLMSoapClient
      */
