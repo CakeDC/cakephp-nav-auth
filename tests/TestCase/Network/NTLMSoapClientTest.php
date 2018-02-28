@@ -19,7 +19,6 @@ use Cake\TestSuite\TestCase;
  */
 class NTLMSoapClientTest extends TestCase
 {
-
     /**
      * @var NTLMSoapClient
      */

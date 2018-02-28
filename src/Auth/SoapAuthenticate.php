@@ -12,6 +12,7 @@
 namespace CakeDC\NavAuth\Auth;
 
 use CakeDC\NavAuth\Network\NavClient;
+use Cake\Utility\Hash;
 
 /**
  * An authentication adapter for AuthComponent. Provides the ability to authenticate using POST
@@ -31,4 +32,24 @@ class SoapAuthenticate extends NavAuthenticate
      * @var string Type
      */
     protected $_type = NavClient::TYPE_SOAP;
+
+    /**
+     * Map external user to users plugin structure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     * @param array $data Data
+     * @return mixed|void
+     */
+    protected function _map($username, $password, $data)
+    {
+        $data = [
+            'id' => Hash::get($data, 'CustCode'),
+            'provider' => 'NavisionSoap',
+            'role' => Hash::get($data, 'Roles.0'),
+            'raw' => $data
+        ];
+
+        return parent::_map($username, $password, $data);
+    }
 }

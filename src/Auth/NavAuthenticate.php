@@ -12,8 +12,13 @@
 namespace CakeDC\NavAuth\Auth;
 
 use CakeDC\NavAuth\Network\NavClient;
+use CakeDC\Users\Controller\Component\UsersAuthComponent;
 use Cake\Auth\FormAuthenticate;
+use Cake\Core\Configure;
+use Cake\Core\Plugin;
 use Cake\Network\Exception\InternalErrorException;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Security;
 
 /**
  * An authentication adapter for AuthComponent. Provides the ability to authenticate using POST
@@ -48,7 +53,20 @@ class NavAuthenticate extends FormAuthenticate
             throw new InternalErrorException(__('A subclass of NavAuthenticate must be used and it should define property $_type with a valid type: "soap", "odata"'));
         }
 
-        return $this->_getNavClient()->getUser($username, $password, $this->_type);
+        $result = $this->_getNavClient()->getUser($username, $password, $this->_type);
+
+        if (!empty($result) && Plugin::loaded('CakeDC/Users')) {
+            $user = $this->_map($username, $password, $result);
+            if (!empty($result)) {
+                if ($user->get('social_accounts')) {
+                    $this->_registry->getController()->dispatchEvent(UsersAuthComponent::EVENT_AFTER_REGISTER, compact('user'));
+                }
+                $this->setConfig('contain', ['SocialAccounts']);
+                $result = parent::_findUser($user->username);
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -58,5 +76,38 @@ class NavAuthenticate extends FormAuthenticate
     protected function _getNavClient()
     {
         return new NavClient();
+    }
+
+    /**
+     * Map external user to users plugin structure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     * @param array $data Data
+     * @return mixed
+     */
+    protected function _map($username, $password, $data)
+    {
+        $options = [
+            'use_email' => false,
+            'validate_email' => false,
+            'token_expiration' => false,
+        ];
+        $data = array_merge([
+            'username' => $username,
+            'password' => $password,
+            'active' => true,
+            'link' => '#',
+            'is_superuser' => false,
+            'credentials' => [
+                'token' => Security::hash($password)
+            ],
+        ], $data);
+
+        $userModel = Configure::read('Users.table');
+        $User = TableRegistry::get($userModel);
+        $user = $User->socialLogin($data, $options);
+
+        return $user;
     }
 }

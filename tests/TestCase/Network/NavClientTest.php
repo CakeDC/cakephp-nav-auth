@@ -21,7 +21,6 @@ use Cake\TestSuite\TestCase;
  */
 class NavClientTest extends TestCase
 {
-
     /**
      * @var NTLMSoapClient
      */
@@ -67,7 +66,9 @@ class NavClientTest extends TestCase
             'instance' => 'instance',
             'method' => 'method',
             'company' => 'company',
-            'endpoint' => 'endpoint'
+            'endpoint' => 'endpoint',
+            'loginField' => 'login',
+            'passwordField' => 'password'
         ];
         Configure::write("NavAuth.url.soap", $urlConfig);
         Configure::write("NavAuth.url.odata", $urlConfig);
@@ -138,7 +139,7 @@ class NavClientTest extends TestCase
         $this->NTLMODataClient->expects($this->once())
             ->method('doRequest')
             ->with(
-                'https://server:port/instance/method/company//endpoint?$filter=Go2000_id+eq+%27test%27+and+Go2000_pw+eq+%27password%27'
+                'https://server:port/instance/method/company//endpoint?$filter=login+eq+%27test%27+and+password+eq+%27password%27'
             )
             ->will($this->returnValue($this->loginResult));
         $this->NavClient->expects($this->once())
@@ -161,7 +162,7 @@ class NavClientTest extends TestCase
         $this->NTLMODataClient->expects($this->once())
             ->method('doRequest')
             ->with(
-                'https://server:port/instance/method/company//endpoint?$filter=Go2000_id+eq+%27test%27+and+Go2000_pw+eq+%27password%27'
+                'https://server:port/instance/method/company//endpoint?$filter=login+eq+%27test%27+and+password+eq+%27password%27'
             )
             ->will($this->returnValue($this->loginResult));
         $this->NavClient->expects($this->once())
