@@ -60,7 +60,7 @@ class NavClient
             Log::info(__('Connecting to webservice: {0}', $baseURL));
             $type = '_' . $type;
             $result = $this->{$type}($baseURL, $credentials);
-            Log::debug(__('Connection successful - Response: {0}', $result));
+            Log::debug(__('Connection successful - Response: {0}', print_r($result, true)));
 
             return $result;
         } catch (\Exception $e) {
@@ -88,12 +88,11 @@ class NavClient
             Configure::read('NavAuth.url.odata.passwordField'),
             Hash::get($credentials, 'pw')
         ));
-
         $response = $client->doRequest($baseURL);
-
         $result = json_decode($response, true);
 
         if (empty($result['value'][0])) {
+            Log::error(__('An error has occurred with OData service: {0}', Hash::get($result, 'error.code')));
             return false;
         }
 

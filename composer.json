@@ -6,8 +6,12 @@
     "require": {
         "cakephp/cakephp": "^3.4"
     },
+    "suggest": {
+        "cakedc/users": "Provides users management including RBAC, social login, and more"
+    },
     "require-dev": {
-        "phpunit/phpunit": "^5.7|^6.0"
+        "phpunit/phpunit": "^5.7|^6.0",
+        "cakedc/users": "dev-master"
     },
     "autoload": {
         "psr-4": {

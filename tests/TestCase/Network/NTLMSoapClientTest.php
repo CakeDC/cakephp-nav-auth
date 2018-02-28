@@ -19,6 +19,11 @@ use Cake\TestSuite\TestCase;
  */
 class NTLMSoapClientTest extends TestCase
 {
+    /**
+     * Fixtures
+     * @var array
+     */
+    public $fixtures = ['plugin.CakeDC/Users.users', 'plugin.CakeDC/Users.social_accounts'];
 
     /**
      * @var NTLMSoapClient

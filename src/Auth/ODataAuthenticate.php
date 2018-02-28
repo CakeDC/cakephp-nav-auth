@@ -11,6 +11,7 @@
 
 namespace CakeDC\NavAuth\Auth;
 
+use Cake\Utility\Hash;
 use CakeDC\NavAuth\Network\NavClient;
 
 /**
@@ -31,4 +32,23 @@ class ODataAuthenticate extends NavAuthenticate
      * @var string Type
      */
     protected $_type = NavClient::TYPE_ODATA;
+
+    /**
+     * @param $username
+     * @param $password
+     * @param $data
+     * @return mixed|void
+     */
+    protected function _map($username, $password, $data)
+    {
+        $data = [
+            'id' => Hash::get($data, 'No'),
+            'provider' => 'NavisionOData',
+            'full_name' => Hash::get($data, 'Name'),
+            'role' => Hash::get($data, 'CustomerRole'),
+            'raw' => $data
+        ];
+
+        return parent::_map($username, $password, $data);
+    }
 }
