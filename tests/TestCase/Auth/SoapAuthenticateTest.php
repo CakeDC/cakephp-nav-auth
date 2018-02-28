@@ -24,12 +24,6 @@ use Cake\TestSuite\TestCase;
 class SoapAuthenticateTest extends TestCase
 {
     /**
-     * Fixtures
-     * @var array
-     */
-    public $fixtures = ['plugin.CakeDC/Users.users', 'plugin.CakeDC/Users.social_accounts'];
-
-    /**
      * @var SoapAuthenticate
      */
     public $SoapAuthenticate;
