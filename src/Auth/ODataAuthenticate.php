@@ -11,8 +11,8 @@
 
 namespace CakeDC\NavAuth\Auth;
 
-use Cake\Utility\Hash;
 use CakeDC\NavAuth\Network\NavClient;
+use Cake\Utility\Hash;
 
 /**
  * An authentication adapter for AuthComponent. Provides the ability to authenticate using POST
@@ -34,10 +34,12 @@ class ODataAuthenticate extends NavAuthenticate
     protected $_type = NavClient::TYPE_ODATA;
 
     /**
-     * @param $username
-     * @param $password
-     * @param $data
-     * @return mixed|void
+     * Map external user to users plugin structure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     * @param array $data Data
+     * @return mixed
      */
     protected function _map($username, $password, $data)
     {

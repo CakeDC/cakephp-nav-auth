@@ -11,15 +11,14 @@
 
 namespace CakeDC\NavAuth\Auth;
 
+use CakeDC\NavAuth\Network\NavClient;
+use CakeDC\Users\Controller\Component\UsersAuthComponent;
+use Cake\Auth\FormAuthenticate;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
-use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
-use Cake\Utility\Security;
-use CakeDC\NavAuth\Network\NavClient;
-use Cake\Auth\FormAuthenticate;
 use Cake\Network\Exception\InternalErrorException;
-use CakeDC\Users\Controller\Component\UsersAuthComponent;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Security;
 
 /**
  * An authentication adapter for AuthComponent. Provides the ability to authenticate using POST
@@ -66,6 +65,7 @@ class NavAuthenticate extends FormAuthenticate
                 $result = parent::_findUser($user->username);
             }
         }
+
         return $result;
     }
 
@@ -79,9 +79,11 @@ class NavAuthenticate extends FormAuthenticate
     }
 
     /**
-     * @param $username
-     * @param $password
-     * @param $data
+     * Map external user to users plugin structure
+     *
+     * @param string $username Username
+     * @param string $password Password
+     * @param array $data Data
      * @return mixed
      */
     protected function _map($username, $password, $data)
@@ -107,6 +109,5 @@ class NavAuthenticate extends FormAuthenticate
         $user = $User->socialLogin($data, $options);
 
         return $user;
-
     }
 }

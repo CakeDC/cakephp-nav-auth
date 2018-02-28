@@ -93,6 +93,7 @@ class NavClient
 
         if (empty($result['value'][0])) {
             Log::error(__('An error has occurred with OData service: {0}', Hash::get($result, 'error.code')));
+
             return false;
         }
 
