@@ -120,7 +120,8 @@ class NavClient
             'exceptions' => true
         ]);
 
-        $response = $client->Login($credentials);
+        $function = Configure::read('NavAuth.url.soap.function', 'Login');
+        $response = $client->{$function}($credentials);
         $result = json_decode($response->return_value, true);
         if (empty($result['Status'])) {
             return false;
