@@ -41,7 +41,9 @@ Configure::write('NavAuth', [
             'type' => '',
             //Endpoint
             'endpoint' => '',
-        ],
+            //Function
+            'function => ''
+         ],
         'odata' => [
             //Protocol (http, https)
             'protocol' => 'https',
